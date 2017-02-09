@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'EWNetworking'
-  s.version          = '1.1'
+  s.version          = '1.0'
   s.summary          = 'EWNetworking--AFNetworking的封装'
 
 # This description is used to generate tags and improve search results.
@@ -37,6 +37,6 @@ EWNetworking--AFNetworking的封装，主要支持get方式的缓存
   # }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
+  # s.frameworks = 'UIKit'
   s.dependency 'AFNetworking', '3.1.0'
 end
