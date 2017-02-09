@@ -413,7 +413,8 @@ static NSString *cachePath() {
     return nil;
   }
   AFHTTPSessionManager *manager = [EWNetworking manager];
-  EWURLSessionTask *session = [manager POST:url parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+  EWURLSessionTask *session = nil;
+  session = [manager POST:url parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
     NSData *imageData = UIImageJPEGRepresentation(image, 1);
     NSString *imageFileName = filename;
     if (!filename || ![filename isKindOfClass:[NSString class]] || filename.length == 0) {
@@ -453,7 +454,8 @@ static NSString *cachePath() {
   }
   NSURLRequest *downloadRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
   AFHTTPSessionManager *manager = [EWNetworking manager];
-  EWURLSessionTask *session = [manager downloadTaskWithRequest:downloadRequest progress:^(NSProgress * _Nonnull downloadProgress) {
+  EWURLSessionTask *session = nil;
+  session = [manager downloadTaskWithRequest:downloadRequest progress:^(NSProgress * _Nonnull downloadProgress) {
     if (progress) {
       progress(downloadProgress.completedUnitCount,downloadProgress.totalUnitCount);
     }

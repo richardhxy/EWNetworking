@@ -1,6 +1,6 @@
 use_frameworks!
 target 'EWNetworking_Tests' do
   pod 'EWNetworking', :path => '../'
-  
+  pod 'AFNetworking', '3.1.0'
   
 end
