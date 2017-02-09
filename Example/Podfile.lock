@@ -1,0 +1,16 @@
+PODS:
+  - EWNetworking (0.1.0)
+
+DEPENDENCIES:
+  - EWNetworking (from `../`)
+
+EXTERNAL SOURCES:
+  EWNetworking:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  EWNetworking: eb66ecdf84f708217838921c652e75fb2bde5aeb
+
+PODFILE CHECKSUM: cf99904dac88f3ffeefe4cc32559ebb7e2b807b7
+
+COCOAPODS: 1.1.1

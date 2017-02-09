@@ -1,0 +1,6 @@
+framework module EWNetworking {
+  umbrella header "EWNetworking-umbrella.h"
+
+  export *
+  module * { export * }
+}
