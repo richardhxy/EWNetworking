@@ -131,8 +131,8 @@ static NSString *cachePath() {
 }
 
 ///写入缓存
-+ (void)cacheResponseObject:(id)responseObject request:(NSURLRequest *)request parameters:(id)params {
-  if (request && responseObject && ![responseObject isKindOfClass:[NSNull class]]) {
++ (void)cacheResponseObject:(id)responseObject requestURL:(NSString *)requestURL parameters:(id)params {
+  if (requestURL && responseObject && ![responseObject isKindOfClass:[NSNull class]]) {
     NSString *directoryPath = cachePath();
     NSError *error = nil;
     //文件夹📂不存在
@@ -148,7 +148,7 @@ static NSString *cachePath() {
       }
     }
     
-    NSString *absoluteURL = [EWNetworking generateGETAbsoluteURL:request.URL.relativeString params:params];
+    NSString *absoluteURL = [EWNetworking generateGETAbsoluteURL:requestURL params:params];
     NSString *key = [NSString networking_md5:absoluteURL];
     NSString *path = [directoryPath stringByAppendingPathComponent:key];
     NSDictionary *dict = (NSDictionary *)responseObject;
@@ -270,7 +270,7 @@ static NSString *cachePath() {
                   }
                    success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                      [EWNetworking successResponse:responseObject callback:success];
-                     [EWNetworking cacheResponseObject:responseObject request:task.currentRequest parameters:params];
+                     [EWNetworking cacheResponseObject:responseObject requestURL:url parameters:params];
                      [[EWNetworking allTasks] removeObject:task];
                    }
                    failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -413,8 +413,7 @@ static NSString *cachePath() {
     return nil;
   }
   AFHTTPSessionManager *manager = [EWNetworking manager];
-  EWURLSessionTask *session = nil;
-  session = [manager POST:url parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+  EWURLSessionTask *session = [manager POST:url parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
     NSData *imageData = UIImageJPEGRepresentation(image, 1);
     NSString *imageFileName = filename;
     if (!filename || ![filename isKindOfClass:[NSString class]] || filename.length == 0) {
@@ -454,8 +453,7 @@ static NSString *cachePath() {
   }
   NSURLRequest *downloadRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
   AFHTTPSessionManager *manager = [EWNetworking manager];
-  EWURLSessionTask *session = nil;
-  session = [manager downloadTaskWithRequest:downloadRequest progress:^(NSProgress * _Nonnull downloadProgress) {
+  EWURLSessionTask *session = [manager downloadTaskWithRequest:downloadRequest progress:^(NSProgress * _Nonnull downloadProgress) {
     if (progress) {
       progress(downloadProgress.completedUnitCount,downloadProgress.totalUnitCount);
     }
