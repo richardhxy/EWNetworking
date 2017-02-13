@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'EWNetworking'
-  s.version          = '1.2'
+  s.version          = '1.3'
   s.summary          = 'EWNetworking--AFNetworking的封装'
 
 # This description is used to generate tags and improve search results.
@@ -25,7 +25,7 @@ EWNetworking--AFNetworking的封装，主要支持get方式的缓存
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'richardhxy' => 'huangxingya@gmail.com' }
-  s.source           = { :git => 'https://github.com/richardhxy/EWNetworking.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/richardhxy/EWNetworking.git', :tag => "s.version" }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
