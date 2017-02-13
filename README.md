@@ -22,9 +22,10 @@ it, simply add the following line to your Podfile:
 pod 'EWNetworking', :git => 'https://github.com/richardhxy/EWNetworking.git'
 ```
 
-## Usage
+## ToDo
 
-
+1.complete clearAllCache method 
+2.add calc all cache size method
 
 ## Author
 
