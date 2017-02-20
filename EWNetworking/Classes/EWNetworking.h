@@ -28,7 +28,10 @@ typedef NS_ENUM(NSInteger, EWHTTPMethod) {
 @interface EWNetworking : NSObject
 
 ///删除所有缓存
-+ (void)clearCaches;
++ (void)clearAllCaches;
+
+///加证书文件Path的set
++ (void)setSecurityPolicyWithCersPath:(NSArray<NSString *> *)cersPath;
 
 ///配置公共的请求头，只调用一次即可，在应用启动的时候配置就可以了
 + (void)configCommonHttpHeaders:(NSDictionary *)httpHeaders;

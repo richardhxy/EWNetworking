@@ -338,20 +338,38 @@ static NSString *cachePath() {
 
 #pragma mark - Public
 
-+ (void)clearCaches {
-  
++ (void)clearAllCaches {
+  [[NSFileManager defaultManager]
+   removeItemAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/EWNetworkingCaches"]
+   error:nil];
+}
+
++ (void)setSecurityPolicyWithCersPath:(NSArray<NSString *> *)cersPath {
+  if (!ew_sharedManager) {
+    ew_sharedManager = [EWNetworking manager];
+  }
+  NSMutableSet *cersData = [NSMutableSet set];
+  [cersPath enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL *stop) {
+    if (obj && obj.length != 0) {
+      [cersData addObject:[NSData dataWithContentsOfFile:obj]];
+    }
+  }];
+  AFSecurityPolicy *securityPolicy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
+  securityPolicy.allowInvalidCertificates = YES;
+  securityPolicy.validatesDomainName = NO;
+  securityPolicy.pinnedCertificates = cersData;
+  [ew_sharedManager setSecurityPolicy:securityPolicy];
 }
 
 + (void)configCommonHttpHeaders:(NSDictionary *)httpHeaders {
-  if (ew_sharedManager) {
-    for (NSString *key in ew_httpHeaders.allKeys) {
-      if (ew_httpHeaders[key] != nil) {
-        [ew_sharedManager.requestSerializer setValue:ew_httpHeaders[key] forHTTPHeaderField:key];
-      }
-    }
+  ew_httpHeaders = httpHeaders;
+  if (!ew_sharedManager) {
+    ew_sharedManager = [EWNetworking manager];
   }
-  else {
-    ew_httpHeaders = httpHeaders;
+  for (NSString *key in ew_httpHeaders.allKeys) {
+    if (ew_httpHeaders[key] != nil) {
+      [ew_sharedManager.requestSerializer setValue:ew_httpHeaders[key] forHTTPHeaderField:key];
+    }
   }
 }
 
@@ -413,8 +431,7 @@ static NSString *cachePath() {
     return nil;
   }
   AFHTTPSessionManager *manager = [EWNetworking manager];
-  EWURLSessionTask *session = nil;
-  session = [manager POST:url parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+  EWURLSessionTask *session = [manager POST:url parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
     NSData *imageData = UIImageJPEGRepresentation(image, 1);
     NSString *imageFileName = filename;
     if (!filename || ![filename isKindOfClass:[NSString class]] || filename.length == 0) {
@@ -454,8 +471,7 @@ static NSString *cachePath() {
   }
   NSURLRequest *downloadRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
   AFHTTPSessionManager *manager = [EWNetworking manager];
-  EWURLSessionTask *session = nil;
-  session = [manager downloadTaskWithRequest:downloadRequest progress:^(NSProgress * _Nonnull downloadProgress) {
+  EWURLSessionTask *session = [manager downloadTaskWithRequest:downloadRequest progress:^(NSProgress * _Nonnull downloadProgress) {
     if (progress) {
       progress(downloadProgress.completedUnitCount,downloadProgress.totalUnitCount);
     }
@@ -480,5 +496,7 @@ static NSString *cachePath() {
   
   return session;
 }
+
+
 
 @end
