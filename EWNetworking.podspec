@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'EWNetworking'
-  s.version          = '1.4'
+  s.version          = '1.5'
   s.summary          = 'EWNetworking--AFNetworking的封装'
 
 # This description is used to generate tags and improve search results.
