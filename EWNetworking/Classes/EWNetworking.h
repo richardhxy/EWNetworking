@@ -27,6 +27,9 @@ typedef NS_ENUM(NSInteger, EWHTTPMethod) {
 
 @interface EWNetworking : NSObject
 
+///更改缓存位置，默认放在 caches/default 文件夹下
++(void)changeCacheDirectory:(NSString *)directoryStr;
+
 ///删除所有缓存
 + (void)clearAllCaches;
 

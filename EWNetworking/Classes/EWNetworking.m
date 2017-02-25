@@ -47,11 +47,18 @@ static NSTimeInterval ew_timeout = 30.0f;
 
 static AFNetworkReachabilityStatus ew_networkStatus;
 
+static NSString *ew_cacheDirectory = nil;
 
 @implementation EWNetworking
 
 static NSString *cachePath() {
-  return [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/EWNetworkingCaches"];
+  NSString *userCacheDirectory = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
+  if (!ew_cacheDirectory && ew_cacheDirectory.length != 0) {
+    return [[userCacheDirectory stringByAppendingPathComponent:@"EWNetworkingCaches"]stringByAppendingPathComponent:ew_cacheDirectory];
+  }
+  else {
+    return [[userCacheDirectory stringByAppendingPathComponent:@"EWNetworkingCaches"]stringByAppendingPathComponent:@"Default"];
+  }
 }
 
 + (NSMutableArray *)allTasks {
@@ -82,7 +89,7 @@ static NSString *cachePath() {
                                                                                 @"text/javascript",
                                                                                 @"text/xml",
                                                                                 @"image/*"]];
-
+      
       for (NSString *key in ew_httpHeaders.allKeys) {
         if (ew_httpHeaders[key] != nil) {
           [manager.requestSerializer setValue:ew_httpHeaders[key] forHTTPHeaderField:key];
@@ -152,7 +159,7 @@ static NSString *cachePath() {
     NSString *key = [NSString networking_md5:absoluteURL];
     NSString *path = [directoryPath stringByAppendingPathComponent:key];
     NSDictionary *dict = (NSDictionary *)responseObject;
-
+    
     NSData *data = nil;
     if ([dict isKindOfClass:[NSData class]]) {
       data = responseObject;
@@ -338,10 +345,22 @@ static NSString *cachePath() {
 
 #pragma mark - Public
 
++ (void)changeCacheDirectory:(NSString *)directoryStr {
+  ew_cacheDirectory = directoryStr;
+}
+
 + (void)clearAllCaches {
-  [[NSFileManager defaultManager]
-   removeItemAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/EWNetworkingCaches"]
-   error:nil];
+  NSString *directoryPath = cachePath();
+  if ([[NSFileManager defaultManager] fileExistsAtPath:directoryPath isDirectory:nil]) {
+    NSError *error = nil;
+    [[NSFileManager defaultManager] removeItemAtPath:directoryPath error:&error];
+    if (error) {
+      NSLog(@"clear caches error: %@", error);
+    }
+    else {
+      NSLog(@"clear caches ok");
+    }
+  }
 }
 
 + (void)setSecurityPolicyWithCersPath:(NSArray<NSString *> *)cersPath {
@@ -383,7 +402,7 @@ static NSString *cachePath() {
     
     [[EWNetworking allTasks] removeAllObjects];
   };
-
+  
 }
 
 + (void)cancelRequestWithURL:(NSString *)url {
@@ -404,28 +423,28 @@ static NSString *cachePath() {
 }
 
 + (EWURLSessionTask *)getWithUrl:(NSString *)url
-                           params:(NSDictionary *)params
-                          success:(EWResponseSuccess)success
-                             fail:(EWResponseFail)fail {
+                          params:(NSDictionary *)params
+                         success:(EWResponseSuccess)success
+                            fail:(EWResponseFail)fail {
   return [EWNetworking _requestWithUrl:url httpMethod:EWHTTPMethod_Get params:params progress:nil success:success failure:fail];
 }
 
 + (EWURLSessionTask *)postWithUrl:(NSString *)url
-                            params:(NSDictionary *)params
-                           success:(EWResponseSuccess)success
-                              fail:(EWResponseFail)fail {
-	  return [EWNetworking _requestWithUrl:url httpMethod:EWHTTPMethod_Post params:params progress:nil success:success failure:fail];
+                           params:(NSDictionary *)params
+                          success:(EWResponseSuccess)success
+                             fail:(EWResponseFail)fail {
+  return [EWNetworking _requestWithUrl:url httpMethod:EWHTTPMethod_Post params:params progress:nil success:success failure:fail];
 }
 
 + (EWURLSessionTask *)uploadWithImage:(UIImage *)image
-                                   url:(NSString *)url
-                              filename:(NSString *)filename
-                                  name:(NSString *)name
-                              mimeType:(NSString *)mimeType
-                            parameters:(NSDictionary *)parameters
-                              progress:(EWUploadProgress)progress
-                               success:(EWResponseSuccess)success
-                                  fail:(EWResponseFail)fail {
+                                  url:(NSString *)url
+                             filename:(NSString *)filename
+                                 name:(NSString *)name
+                             mimeType:(NSString *)mimeType
+                           parameters:(NSDictionary *)parameters
+                             progress:(EWUploadProgress)progress
+                              success:(EWResponseSuccess)success
+                                 fail:(EWResponseFail)fail {
   if (!url || url.length == 0) {
     NSParameterAssert(url);
     return nil;
@@ -462,10 +481,10 @@ static NSString *cachePath() {
 }
 
 + (EWURLSessionTask *)downloadWithUrl:(NSString *)url
-                            saveToPath:(NSString *)saveToPath
-                              progress:(EWDownloadProgress)progress
-                               success:(EWResponseSuccess)success
-                               failure:(EWResponseFail)failure {
+                           saveToPath:(NSString *)saveToPath
+                             progress:(EWDownloadProgress)progress
+                              success:(EWResponseSuccess)success
+                              failure:(EWResponseFail)failure {
   if (!url || url.length == 0) {
     NSParameterAssert(url);
     return nil;
