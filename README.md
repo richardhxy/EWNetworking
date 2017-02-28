@@ -19,13 +19,12 @@ EWNetworking is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'EWNetworking', :git => 'https://github.com/richardhxy/EWNetworking.git'
+pod 'EWNetworking', '1.5'
 ```
 
-## ToDo
+## TODO
 
-1.complete clearAllCache method 
-2.add calc all cache size method
+1. add calc all cache size method
 
 ## Author
 
