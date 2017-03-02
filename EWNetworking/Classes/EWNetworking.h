@@ -6,12 +6,19 @@
 //  Copyright © 2017年 feiying. All rights reserved.
 //
 
-
-//**********************version 1.6**************************//
+//**********************version 1.7**************************//
 
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+
+#if DEBUG
+#define EWNetLog(format, ...) NSLog((@"[函数名:%s]" "[行号:%d]" "[Header:%@]" format), __FUNCTION__, __LINE__, [ew_httpHeaders description], ##__VA_ARGS__)
+#define EWLog(...) NSLog(__VA_ARGS__)
+#else
+#define EWNetLog(format, ...)
+#define EWLog(format, ...)
+#endif
 
 @class NSURLSessionTask;
 
@@ -27,7 +34,6 @@ typedef NS_ENUM(NSInteger, EWHTTPMethod) {
   EWHTTPMethod_Get = 1,
   EWHTTPMethod_Post = 2,
 };
-
 
 @interface EWNetworking : NSObject
 
