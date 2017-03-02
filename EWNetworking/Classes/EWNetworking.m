@@ -10,6 +10,14 @@
 #import "AFNetworking.h"
 #import <CommonCrypto/CommonDigest.h>
 
+#if DEBUG
+#define EWNetLog(format, ...) NSLog((@"[函数名:%s]" "[行号:%d]" "[Header:%@]" format), __FUNCTION__, __LINE__, [ew_httpHeaders description], ##__VA_ARGS__)
+#define EWLog(...) NSLog(__VA_ARGS__)
+#else
+#define EWNetLog(format, ...)
+#define EWLog(format, ...)
+#endif
+
 @interface NSString (md5)
 
 + (NSString *)networking_md5:(NSString *)string;
@@ -30,7 +38,6 @@
   for (i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
     [ms appendFormat:@"%02x", (int)(digest[i])];
   }
-  
   return [ms copy];
 }
 
@@ -130,7 +137,6 @@ static NSString *cachePath() {
     NSData *data = [[NSFileManager defaultManager] contentsAtPath:path];
     if (data) {
       cacheData = data;
-      NSLog(@"Read data from cache for url: %@\n",url);
     }
   }
   
@@ -150,7 +156,7 @@ static NSString *cachePath() {
                                                 attributes:nil
                                                      error:&error];
       if (error) {
-        NSLog(@"失败——创建网络缓存文件夹📂");
+        EWLog(@"失败——创建网络缓存文件夹📂");
         return;
       }
     }
@@ -172,10 +178,10 @@ static NSString *cachePath() {
     if (data && !error) {
       BOOL isCacheOK = [[NSFileManager defaultManager]createFileAtPath:path contents:data attributes:nil];
       if (isCacheOK) {
-        NSLog(@"成功——网络缓存至本地：%@",absoluteURL);
+        EWLog(@"成功——网络缓存至本地：%@",absoluteURL);
       }
       else {
-        NSLog(@"失败——网络缓存至本地：%@,%@",absoluteURL,[error localizedDescription]);
+        EWLog(@"失败——网络缓存至本地：%@,%@",absoluteURL,[error localizedDescription]);
       }
     }
   }
@@ -256,13 +262,14 @@ static NSString *cachePath() {
     NSParameterAssert(url);
     return nil;
   }
-  
+  EWNetLog(@"发起请求 %@ %@ %@",url,httpMethod == EWHTTPMethod_Get ? @"GET" : @"POST",[params description]);
   EWURLSessionTask *session = nil;
   if (httpMethod == EWHTTPMethod_Get) {
     if (ew_networkStatus == AFNetworkReachabilityStatusUnknown ||  ew_networkStatus == AFNetworkReachabilityStatusNotReachable ) {
       id response = [EWNetworking getCahceResponseWithURL:url parameters:params];
       if (response) {
         if (success) {
+          EWNetLog(@"读取缓存");
           [EWNetworking successResponse:response callback:success];
         }
         return nil;
@@ -276,11 +283,13 @@ static NSString *cachePath() {
                     }
                   }
                    success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                     EWNetLog(@"请求成功");
                      [EWNetworking successResponse:responseObject callback:success];
                      [EWNetworking cacheResponseObject:responseObject requestURL:url parameters:params];
                      [[EWNetworking allTasks] removeObject:task];
                    }
                    failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                     EWNetLog(@"请求失败 %@",[error localizedDescription]);
                      [[EWNetworking allTasks] removeObject:task];
                      if ([error code] < 0) {
                        id response = [EWNetworking getCahceResponseWithURL:task.originalRequest.URL.relativeString
@@ -309,10 +318,12 @@ static NSString *cachePath() {
                      }
                    }
                     success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                      EWNetLog(@"请求成功");
                       [EWNetworking successResponse:responseObject callback:success];
                       [[EWNetworking allTasks] removeObject:task];
                     }
                     failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                      EWNetLog(@"请求失败 %@",[error localizedDescription]);
                       [[EWNetworking allTasks] removeObject:task];
                       [EWNetworking failureWithError:error callback:failure];
                     }];
@@ -355,10 +366,10 @@ static NSString *cachePath() {
     NSError *error = nil;
     [[NSFileManager defaultManager] removeItemAtPath:directoryPath error:&error];
     if (error) {
-      NSLog(@"clear caches error: %@", error);
+      EWLog(@"clear caches error: %@", error);
     }
     else {
-      NSLog(@"clear caches ok");
+      EWLog(@"clear caches ok");
     }
   }
 }

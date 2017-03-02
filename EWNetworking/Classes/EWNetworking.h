@@ -6,6 +6,10 @@
 //  Copyright © 2017年 feiying. All rights reserved.
 //
 
+
+//**********************version 1.6**************************//
+
+
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
